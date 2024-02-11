@@ -1,0 +1,37 @@
+package waveFunctionCollapse.algorithm;
+
+import waveFunctionCollapse.tilesets.TileSet;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * A TileConfiguration is a specific Tile together with its rotation
+ */
+public record TileConfiguration(TileSet tileSet, Image image, int rotation, List<EdgeType> edges) {
+
+
+    /**
+     * Converts a Direction into an int, compatible for calculating with rotations
+     *
+     * @param direction the direction
+     * @return direction as int
+     */
+    public final int directionToInt(Direction direction) {
+        return switch (direction) {
+            case ABOVE -> 0;
+            case RIGHT -> 1;
+            case BELOW -> 2;
+            case LEFT -> 3;
+        };
+    }
+
+    @Override
+    public String toString() {
+        return "[" + this.image + ", rotation: " + this.rotation + "]";
+    }
+}
