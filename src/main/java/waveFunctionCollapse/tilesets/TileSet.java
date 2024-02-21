@@ -56,7 +56,7 @@ public abstract class TileSet {
      * @return the BufferedImage of the given file
      * @throws IOException if the image is not found
      */
-    private final BufferedImage initializeImage(final String imagePath) {
+    private BufferedImage initializeImage(final String imagePath) {
         BufferedImage image = null;
         try {
             image = ImageIO.read(new File(imagePath));

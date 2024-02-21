@@ -1,7 +1,6 @@
 package waveFunctionCollapse.tilesets;
 
 import waveFunctionCollapse.algorithm.EdgeType;
-
 import java.util.*;
 
 public class LabyrinthTileSet extends TileSet {

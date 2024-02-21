@@ -4,10 +4,10 @@ import waveFunctionCollapse.algorithm.EdgeType;
 
 import java.util.*;
 
-public class Labyrinth2TileSet extends TileSet {
+public class WavyTiles extends TileSet {
 
-    public Labyrinth2TileSet() {
-        super("Labyrinth_2.0");
+    public WavyTiles() {
+        super("WavyTiles");
     }
 
     @Override

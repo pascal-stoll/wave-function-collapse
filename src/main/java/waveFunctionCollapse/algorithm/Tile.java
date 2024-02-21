@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  */
 public final class Tile {
 
+
     private final Grid grid;
     private final TileLabel tileLabel;
     private boolean collapsed;

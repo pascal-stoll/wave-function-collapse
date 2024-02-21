@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 public class Grid {
 
-    private final WaveFunctionCollapseAlgorithm algorithm;
+    final WaveFunctionCollapseAlgorithm algorithm;
     private final GridFrame gridFrame;
     private int collapsedTiles;
     private final int entropyRandomScore;

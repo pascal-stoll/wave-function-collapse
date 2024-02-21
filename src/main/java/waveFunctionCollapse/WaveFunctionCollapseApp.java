@@ -17,9 +17,9 @@ public class WaveFunctionCollapseApp {
 
         // Parameters for the algorithm
         Dimension dimension = screenDimension;
-        int tileSize = 20;
+        int tileSize = 15;
         int algorithmSpeed = 2;
-        float nonRandomFactor = .2f; // as percentage
+        float nonRandomFactor = 0.2f; // as percentage
         StartConfiguration startConfiguration = StartConfiguration.MIDDLE;
 
         // TileSet for the algorithm
