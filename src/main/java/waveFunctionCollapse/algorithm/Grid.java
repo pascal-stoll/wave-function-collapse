@@ -18,8 +18,6 @@ public class Grid {
 
     private Map<Position, Tile> tiles = new HashMap<>();
 
-    private ArrayList<Integer> entropies = new ArrayList<>();
-
     /**
      * Creates a Grid object
      */

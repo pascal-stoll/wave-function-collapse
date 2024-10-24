@@ -23,7 +23,7 @@ public abstract class TileSet {
     private final Set<TileConfiguration> allTileConfigurations;
 
     public TileSet(final String directoryPath) {
-        final String projectPath = "C:/Users/pas02/IdeaProjects/WaveFunctionCollapse/src/main/resources/";
+        final String projectPath = "src/main/resources/";
 
         List<String> fileNames = getFileNames();
         List<Set<Integer>> rotations = getRotations();
@@ -31,9 +31,9 @@ public abstract class TileSet {
 
         this.numberOfTileConfigurations = rotations.stream().map(Set::size).reduce(0, Integer::sum);
 
-        int numberOfTiles = new File(projectPath + directoryPath + "/").list().length;
+        int numberOfTiles = fileNames.size();
 
-        Set<TileConfiguration> temporaryTileConfigurations = new HashSet<>();
+        this.allTileConfigurations = new HashSet<>();
         for (int i = 0; i < numberOfTiles; i++) {
             String fullImagePath = projectPath + directoryPath + "/" + fileNames.get(i);
             BufferedImage image = initializeImage(fullImagePath);
@@ -41,11 +41,9 @@ public abstract class TileSet {
             for (int rotation : rotations.get(i)) {
                 Image finalImage = rotateImage(image, rotation);
                 List<EdgeType> rotatedEdges = rotateEdges(edges.get(i), rotation);
-                temporaryTileConfigurations.add(new TileConfiguration(this, finalImage, rotation, rotatedEdges));
+                this.allTileConfigurations.add(new TileConfiguration(this, finalImage, rotation, rotatedEdges));
             }
         }
-
-        this.allTileConfigurations = temporaryTileConfigurations;
     }
 
 
@@ -74,7 +72,7 @@ public abstract class TileSet {
      * @param rotation the number of 90 deg. turn
      * @return the rotated image
      */
-    private final Image rotateImage(final BufferedImage image, final int rotation) {
+    private Image rotateImage(final BufferedImage image, final int rotation) {
         double angle = rotation*(Math.PI/2);
         int width = image.getWidth();
         int height = image.getHeight();

@@ -13,17 +13,15 @@ public class WaveFunctionCollapseApp {
 
     public static void main(String[] args) {
 
-        Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-
         // Parameters for the algorithm
-        Dimension dimension = screenDimension;
-        int tileSize = 15;
-        int algorithmSpeed = 2;
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int tileSize = 60;
+        int algorithmSpeed = 1;
         float nonRandomFactor = 0.2f; // as percentage
-        StartConfiguration startConfiguration = StartConfiguration.MIDDLE;
+        StartConfiguration startConfiguration = StartConfiguration.RANDOM;
 
         // TileSet for the algorithm
-        TileSet tileSet = new LabyrinthTileSet();
+        TileSet tileSet = new CarcassoneTileSet();
 
         // Initialize
         WaveFunctionCollapseAlgorithm algorithm =

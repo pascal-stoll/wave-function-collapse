@@ -3,12 +3,8 @@ package waveFunctionCollapse.gui;
 import waveFunctionCollapse.algorithm.Tile;
 import waveFunctionCollapse.algorithm.TileConfiguration;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * A Tile in the grid, represented as a JLabel child class
