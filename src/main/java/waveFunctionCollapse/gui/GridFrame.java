@@ -27,7 +27,7 @@ public class GridFrame extends JFrame {
         this.setTitle("Wave Function Collapse");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-        this.setResizable(true);
+        this.setResizable(false);
 
         // apply grid layout
         this.setLayout(new GridLayout(tilesVertical, tilesHorizontal, 0, 0));

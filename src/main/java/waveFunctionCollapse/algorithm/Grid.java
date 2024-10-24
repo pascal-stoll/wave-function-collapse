@@ -11,22 +11,20 @@ import java.util.stream.Collectors;
  */
 public class Grid {
 
-    final WaveFunctionCollapseAlgorithm algorithm;
+    private final AlgorithmParameters parameters;
     private final GridFrame gridFrame;
-    private int collapsedTiles;
+    private int collapsedTiles = 0;
     private final int entropyRandomScore;
 
-    private Map<Position, Tile> tiles = new HashMap<>();
+    private final Map<Position, Tile> tiles = new HashMap<>();
 
     /**
      * Creates a Grid object
      */
-    public Grid(final WaveFunctionCollapseAlgorithm algorithm) {
-        super();
-        this.algorithm = algorithm;
+    public Grid(final AlgorithmParameters parameters) {
+        this.parameters = parameters;
         this.gridFrame = new GridFrame(this);
-        this.collapsedTiles = 0;
-        this.entropyRandomScore = (int) Math.ceil(this.algorithm.getNonRandomFactor() * this.algorithm.getTileSet().getNumberOfTileConfigurations());
+        this.entropyRandomScore = (int) Math.ceil(this.parameters.nonRandomFactor() * this.parameters.tileSet().getNumberOfTileConfigurations());
     }
 
     public final WaveFunctionCollapseAlgorithm getAlgorithm() {
@@ -87,7 +85,7 @@ public class Grid {
      */
     public final void collapseCertainAt(final Position position) {
         // Get certain Tile
-        Tile nextCollapsed = this.getTiles().get(position);
+        Tile nextCollapsed = this.tiles.get(position);
 
         // collapse Tile
         collapseTile(nextCollapsed);

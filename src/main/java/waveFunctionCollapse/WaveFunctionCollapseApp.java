@@ -1,5 +1,6 @@
 package waveFunctionCollapse;
 
+import waveFunctionCollapse.algorithm.AlgorithmParameters;
 import waveFunctionCollapse.algorithm.StartConfiguration;
 import waveFunctionCollapse.algorithm.WaveFunctionCollapseAlgorithm;
 import waveFunctionCollapse.tilesets.*;
@@ -20,12 +21,20 @@ public class WaveFunctionCollapseApp {
         float nonRandomFactor = 0.2f; // as percentage
         StartConfiguration startConfiguration = StartConfiguration.RANDOM;
 
+        AlgorithmParameters params = new AlgorithmParameters.Builder()
+                .dimension(dimension)
+                .tileSize(tileSize)
+                .algorithmSpeed(algorithmSpeed)
+                .startConfiguration(startConfiguration)
+                .nonRandomFactor(nonRandomFactor)
+                .build();
+
         // TileSet for the algorithm
         TileSet tileSet = new CarcassoneTileSet();
 
         // Initialize
         WaveFunctionCollapseAlgorithm algorithm =
-                new WaveFunctionCollapseAlgorithm(tileSet, dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor);
+                new WaveFunctionCollapseAlgorithm(tileSet, params); // dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor);
 
         // Run algorithm
         algorithm.run();

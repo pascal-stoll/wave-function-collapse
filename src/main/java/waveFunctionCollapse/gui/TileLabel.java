@@ -39,6 +39,10 @@ public class TileLabel extends JLabel {
         this.setVisible(true);
     }
 
+    public void hideImageConfiguration() {
+        // TODO
+    }
+
     @Override
     public String toString() {
         return "[A TileLabel]";
