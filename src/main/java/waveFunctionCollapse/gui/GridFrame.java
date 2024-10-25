@@ -1,7 +1,5 @@
 package waveFunctionCollapse.gui;
 
-import waveFunctionCollapse.algorithm.Grid;
-
 import javax.swing.JFrame;
 import java.awt.*;
 
@@ -13,15 +11,9 @@ import java.awt.*;
  */
 public class GridFrame extends JFrame {
 
-    /**
-     * Creates a new GridFrame object and thus GUI window
-     *
-     */
-    public GridFrame(final Grid grid) {
-        super();
 
-        int tilesHorizontal = grid.getAlgorithm().getTilesHorizontal();
-        int tilesVertical = grid.getAlgorithm().getTilesVertical();
+    public GridFrame(final int tilesHorizontal, final int tilesVertical) {
+        super();
 
         // apply default settings
         this.setTitle("Wave Function Collapse");
@@ -32,6 +24,9 @@ public class GridFrame extends JFrame {
         // apply grid layout
         this.setLayout(new GridLayout(tilesVertical, tilesHorizontal, 0, 0));
         this.getContentPane().setBackground(Color.WHITE);
+
+        // set visible
+        this.setVisible(true);
     }
 
 }

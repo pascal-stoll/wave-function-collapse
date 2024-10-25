@@ -4,10 +4,18 @@ import waveFunctionCollapse.tilesets.TileSet;
 
 import java.awt.*;
 
-public record AlgorithmParameters(Dimension dimension, int tileSize, int tilesHorizontal, int tilesVertical, int algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
+public record AlgorithmParameters(Dimension dimension, int tileSize, int algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
 
-    public AlgorithmParameters(final Dimension dimension, final int tileSize, final int algorithmSpeed, final StartConfiguration startConfiguration, final float nonRandomFactor) {
-        this(dimension, tileSize, dimension.width / tileSize, dimension.height / tileSize, algorithmSpeed, startConfiguration, nonRandomFactor);
+    public int tilesHorizontal() {
+        return dimension.width / tileSize;
+    }
+
+    public int tilesVertical() {
+        return dimension.height / tileSize;
+    }
+
+    public int totalTiles() {
+        return tilesHorizontal()*tilesVertical();
     }
 
     public static class Builder {

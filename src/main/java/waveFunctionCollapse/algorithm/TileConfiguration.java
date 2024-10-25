@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * A TileConfiguration is a specific Tile together with its rotation
  */
-public record TileConfiguration(TileSet tileSet, Image image, int rotation, List<EdgeType> edges) {
+public record TileConfiguration(Image image, int rotation, List<EdgeType> edges) {
 
 
     /**

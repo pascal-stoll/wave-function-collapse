@@ -11,13 +11,13 @@ import java.awt.*;
  */
 public class TileLabel extends JLabel {
 
-    private final Tile tile;
+    private final int tileSize;
     /**
      * Creates a TileLabel object
      */
-    public TileLabel(final Tile tile) {
+    public TileLabel(final int tileSize) {
         super();
-        this.tile = tile;
+        this.tileSize = tileSize;
         // not visible when tileSize is implemented correctly
         // kept for checking purposes
         this.setBackground(Color.GREEN);
@@ -30,7 +30,7 @@ public class TileLabel extends JLabel {
      */
     public final void showImageConfiguration(final TileConfiguration configuration) {
         Image image = configuration.image();
-        int tileSize = this.tile.getGrid().getAlgorithm().getTileSize();
+        int tileSize = this.tileSize;
 
         Image scaledImage = image.getScaledInstance(tileSize, tileSize, Image.SCALE_SMOOTH);
 

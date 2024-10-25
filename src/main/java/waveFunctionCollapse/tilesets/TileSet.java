@@ -41,7 +41,7 @@ public abstract class TileSet {
             for (int rotation : rotations.get(i)) {
                 Image finalImage = rotateImage(image, rotation);
                 List<EdgeType> rotatedEdges = rotateEdges(edges.get(i), rotation);
-                this.allTileConfigurations.add(new TileConfiguration(this, finalImage, rotation, rotatedEdges));
+                this.allTileConfigurations.add(new TileConfiguration(finalImage, rotation, rotatedEdges));
             }
         }
     }
