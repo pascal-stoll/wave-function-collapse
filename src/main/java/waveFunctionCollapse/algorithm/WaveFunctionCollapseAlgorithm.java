@@ -77,10 +77,13 @@ public class WaveFunctionCollapseAlgorithm {
      */
     public final void run() {
         while (!this.isCompleted()) {
-            Tile nextCollapsed = nextTileToBeCollapsed();
-            collapseTile(nextCollapsed);
+            Collapse collapse = pickNextCollapse();
+            collapse.collapse();
 
-            waitForMilliseconds();
+            // Update state of algorithm
+            this.tilesCollapsed++;
+            updateEntropiesOfAdjacent(collapse.tile());
+            pause();
         }
         System.out.println("Done!");
     }
@@ -93,7 +96,13 @@ public class WaveFunctionCollapseAlgorithm {
      * @param position the position of the tile to be collapsed
      */
     private void collapseAtPosition(final Position position) {
-        collapseTile(this.tiles.get(position));
+        Tile tile =  this.tiles.get(position);
+        Collapse collapse = new Collapse(tile, pickTileConfiguration(tile));
+        collapse.collapse();
+
+        this.tilesCollapsed++;
+        updateEntropiesOfAdjacent(collapse.tile());
+        pause();
     }
 
     /**
@@ -110,62 +119,40 @@ public class WaveFunctionCollapseAlgorithm {
      *
      * Implemented to see the progress of the algorithm visually
      */
-    private void waitForMilliseconds() {
+    private void pause() {
         try {
             Thread.sleep(this.parameters.algorithmSpeed());
         }
         catch (InterruptedException e) {
-
+            System.out.println(e);
         }
     }
+
 
     /**
      * Picks a Tile which is collapsed next
      *
      * @return the Tile to be collapsed next
      */
-    private Tile nextTileToBeCollapsed() {
+    private Collapse pickNextCollapse() {
         int minimalEntropy = this.tiles.values().stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .map(Tile::getEntropy)
                 .min(Integer::compareTo).get()
                 + this.entropyRandomScore;
 
-        // TODO: Change logic to always extract candidate with entropy=1, throw error on entropy=0
         List<Tile> collapseCandidates = this.tiles.values()
                 .stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .filter(tile -> tile.getEntropy() <= minimalEntropy)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
 
-        if (collapseCandidates.size() == 1) {
-            return collapseCandidates.get(0);
-        }
-        else if (collapseCandidates.isEmpty()) {
-            throw new RuntimeException("No Tile can be collapsed.");
-        }
+        Tile collapseTile = WaveFunctionCollapseAlgorithm.getRandomFromList(collapseCandidates);
+        TileConfiguration collapseConfiguration = pickTileConfiguration(collapseTile);
 
-        Random random = new Random();
-        int randIndex = random.nextInt(collapseCandidates.size());
-
-        return collapseCandidates.get(randIndex);
+        return new Collapse(collapseTile, collapseConfiguration);
     }
 
-    /**
-     * Collapses a Tile by picking a TileConfiguration and showing it
-     * @param nextCollapsed the Tile to be collapsed
-     */
-    private void collapseTile(Tile nextCollapsed) {
-        // pick one configuration at random
-        TileConfiguration collapseConfiguration = getTileConfiguration(nextCollapsed);
-
-        // display ImageConfiguration in GUI
-        nextCollapsed.display(collapseConfiguration);
-
-        // Update algorithm state
-        this.tilesCollapsed++;
-        updateEntropiesOfAdjacent(nextCollapsed);
-    }
 
     /**
      * picks one TileConfiguration of the given Tile to collapse it
@@ -174,87 +161,67 @@ public class WaveFunctionCollapseAlgorithm {
      * @return one randomly picked configuration
      * @throws RuntimeException if no configuration is possible
      */
-    private TileConfiguration getTileConfiguration(final Tile nextCollapsed) {
-        List<TileConfiguration> possibleConfigurations = getPossibleImageConfigurations(nextCollapsed);
+    private TileConfiguration pickTileConfiguration(final Tile nextCollapsed) {
+        List<TileConfiguration> configurations = getValidTileConfigurations(nextCollapsed);
 
-        int numberOfCandidates = possibleConfigurations.size();
-        ArrayList<TileConfiguration> possibleConfigurationsAsArray = new ArrayList<>(possibleConfigurations);
+        // TODO Handle error case better
+        if (configurations.isEmpty()) throw new RuntimeException("Error. No valid collapse was found.");
 
-        if (numberOfCandidates == 1) {
-            return possibleConfigurations.iterator().next();
-        }
-        else if (numberOfCandidates == 0) {
-            throw new RuntimeException("Error. No valid collapse was found.");
-        }
-
-        Random random = new Random();
-        int randomIndex = random.nextInt(numberOfCandidates);
-        return possibleConfigurationsAsArray.get(randomIndex);
+        return WaveFunctionCollapseAlgorithm.getRandomFromList(configurations);
     }
 
-    private Set<Tile> getAdjacentTiles(final Tile tile) {
-        int lastRow = this.parameters.tilesVertical() - 1;
-        int lastCol = this.parameters.tilesHorizontal() - 1;
-        Position position = tile.getPosition();
-        int row = position.row();
-        int col = position.col();
-
-        Set<Tile> adjacentTiles = new HashSet<Tile>();
-
-        // Check all 4 directions
-        if (row != 0) {
-            adjacentTiles.add(this.tiles.get(new Position(row - 1, col)));
-        }
-        if (row != lastRow) {
-            adjacentTiles.add(this.tiles.get(new Position(row + 1, col)));
-        }
-        if (col != 0) {
-            adjacentTiles.add(this.tiles.get(new Position(row, col - 1)));
-        }
-        if (col != lastCol) {
-            adjacentTiles.add(this.tiles.get(new Position(row, col + 1)));
-        }
-
-        return adjacentTiles;
+    private static <T extends Object> T getRandomFromList(final List<T> list) {
+        int i = new Random().nextInt(list.size());
+        return list.get(i);
     }
 
     /**
-     * Updates the entropies of the Tiles adjacent to the gieven Tile
+     * Updates the entropies of the Tiles adjacent to the given Tile
      *
-     * @param collapsed the Tile whose neighbours should be updated
+     * @param collapsed the Tile whose neighbours' entropies are updated
      */
     private void updateEntropiesOfAdjacent(final Tile collapsed) {
-        getAdjacentTiles(collapsed)
-                .stream()
+        int lastRow = this.parameters.tilesVertical() - 1;
+        int lastCol = this.parameters.tilesHorizontal() - 1;
+        int row = collapsed.getPosition().row();
+        int col = collapsed.getPosition().col();
+
+        Set<Tile> adjacentTiles = new HashSet<>();
+        if (row != 0) adjacentTiles.add(this.tiles.get(new Position(row - 1, col)));
+        if (row != lastRow) adjacentTiles.add(this.tiles.get(new Position(row + 1, col)));
+        if (col != 0) adjacentTiles.add(this.tiles.get(new Position(row, col - 1)));
+        if (col != lastCol) adjacentTiles.add(this.tiles.get(new Position(row, col + 1)));
+
+        adjacentTiles.stream()
                 .filter(Predicate.not(Tile::isCollapsed))
-                .forEach(tile -> tile.setEntropy(getPossibleImageConfigurations(tile).size()));
+                .forEach(tile -> tile.setEntropy(getValidTileConfigurations(tile).size()));
     }
+
 
     /**
-     * Returns all possible imageConfiguration for the given Tile
+     * Returns all possible TileConfigurations of a given Tile
      * by checking all adjacent edges
      *
-     * @return the List of possible configurations
+     * @return a List of valid TileConfigurations
      */
-    private List<TileConfiguration> getPossibleImageConfigurations(final Tile tile) {
-
-        Optional<EdgeType> adjacentEdge;
-        Stream<TileConfiguration> possibleConfigurations = this.tileSet.getAllTileImageConfigurations().stream();
-
-        for (int i = 0; i < 4; i++) {
-            adjacentEdge = getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
-            if (adjacentEdge.isPresent()) {
-                // Create final variables to use in Stream
-                int finalI = i;
-                Optional<EdgeType> finalAdjacentEdge = adjacentEdge;
-
-                possibleConfigurations = possibleConfigurations
-                        .filter(x -> x.edges().get(finalI) == finalAdjacentEdge.get());
+    private List<TileConfiguration> getValidTileConfigurations(final Tile tile) {
+        // returns true if a configuration matches all four adjacent edges
+        Predicate<TileConfiguration> cond = config -> {
+            for (int i=0; i<4; i++) {
+                Optional<EdgeType> adjacent = getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
+                if (adjacent.isEmpty()) continue;
+                if (adjacent.get() != config.edges().get(i)) return false;
             }
-        }
+            return true;
+        };
 
-        return possibleConfigurations.collect(Collectors.toCollection(ArrayList::new));
+        return this.tileSet
+                .getAllTileImageConfigurations()
+                .stream()
+                .filter(cond)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
+
 
     /**
      * returns the EdgeType that is adjacent to this tile in the given direction
@@ -276,7 +243,7 @@ public class WaveFunctionCollapseAlgorithm {
         }
 
         TileConfiguration adjacentTIC = adjacentTileImageConfiguration.get();
-        int directionAsInt = adjacentTIC.directionToInt(direction);
+        int directionAsInt = TileConfiguration.directionToInt(direction);
         EdgeType adjacentEdge = adjacentTIC.edges().get((directionAsInt+2)%4);
 
         return Optional.of(adjacentEdge);

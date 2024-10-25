@@ -17,7 +17,7 @@ public record TileConfiguration(Image image, int rotation, List<EdgeType> edges)
      * @param direction the direction
      * @return direction as int
      */
-    public final int directionToInt(Direction direction) {
+    public static int directionToInt(Direction direction) {
         return switch (direction) {
             case ABOVE -> 0;
             case RIGHT -> 1;
