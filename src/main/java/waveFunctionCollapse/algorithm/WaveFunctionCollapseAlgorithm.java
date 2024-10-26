@@ -6,7 +6,6 @@ import waveFunctionCollapse.tilesets.TileSet;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The algorithm that performs the WaveFunctionCollapse
@@ -14,9 +13,9 @@ import java.util.stream.Stream;
 public class WaveFunctionCollapseAlgorithm {
 
     private final TileSet tileSet;
-    private final AlgorithmParameters parameters;
-    private final HashMap<Position, Tile> tiles = new HashMap<>();
+    private final Grid grid;
     private final int entropyRandomScore;
+    private final int algorithmSpeed;
     private int tilesCollapsed = 0;
 
     /**
@@ -27,22 +26,24 @@ public class WaveFunctionCollapseAlgorithm {
      */
     public WaveFunctionCollapseAlgorithm(final TileSet tileSet, final AlgorithmParameters parameters) {
         this.tileSet = tileSet;
-        this.parameters = parameters;
+        this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileSet.getNumberOfTileConfigurations());
+        this.algorithmSpeed = parameters.algorithmSpeed();
 
-        // Sets up GridFrame and Tiles
-        GridFrame frame = new GridFrame(this.parameters.tilesHorizontal(), this.parameters.tilesVertical());
-        this.entropyRandomScore = (int) Math.ceil(this.parameters.nonRandomFactor() * this.tileSet.getNumberOfTileConfigurations());
+        // Sets up Grid, GridFrame and Tiles
+        this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical());
+        GridFrame frame = new GridFrame(parameters.tilesHorizontal(), parameters.tilesVertical());
+
 
         // Initialize Tiles: Creates and initializes tiles for every spot
-        int tilesHorizontal = this.parameters.tilesHorizontal();
-        for (int i = 0; i<this.parameters.totalTiles(); i++) {
+        int tilesHorizontal = parameters.tilesHorizontal();
+        for (int i = 0; i<this.grid.totalTiles(); i++) {
             int row = i / tilesHorizontal;
             int col = i % tilesHorizontal;
             Position tilePosition = new Position(row, col);
 
-            Tile tile = new Tile(tilePosition, this.parameters.tileSize(), this.parameters.totalTiles());
+            Tile tile = new Tile(tilePosition, parameters.tileSize(), this.grid.totalTiles());
             frame.add(tile.getTileLabel());
-            this.tiles.put(tilePosition, tile);
+            this.grid.getTiles().put(tilePosition, tile);
         }
 
         // Start Configuration
@@ -52,18 +53,18 @@ public class WaveFunctionCollapseAlgorithm {
                 break;
 
             case MIDDLE:
-                int middleHorizontal = this.parameters.tilesHorizontal() / 2;
-                int middleVertical = this.parameters.tilesVertical() / 2;
+                int middleHorizontal = parameters.tilesHorizontal() / 2;
+                int middleVertical = parameters.tilesVertical() / 2;
                 collapseAtPosition(new Position(middleVertical, middleHorizontal));
                 break;
 
             case MULTISTART_RANDOM:
-                startCollapses = (int) Math.ceil(Math.log10(this.parameters.tilesHorizontal()*this.parameters.tilesVertical())) * 2;
+                startCollapses = (int) Math.ceil(Math.log10(parameters.tilesHorizontal()*parameters.tilesVertical())) * 2;
                 Position randomPosition;
                 Random random = new Random();
                 for (int i=0; i<startCollapses; i++) {
-                    int row = random.nextInt(this.parameters.tilesVertical() - 1);
-                    int col = random.nextInt(this.parameters.tilesHorizontal() - 1);
+                    int row = random.nextInt(parameters.tilesVertical() - 1);
+                    int col = random.nextInt(parameters.tilesHorizontal() - 1);
                     randomPosition = new Position(row, col);
                     collapseAtPosition(randomPosition);
                 }
@@ -96,7 +97,7 @@ public class WaveFunctionCollapseAlgorithm {
      * @param position the position of the tile to be collapsed
      */
     private void collapseAtPosition(final Position position) {
-        Tile tile =  this.tiles.get(position);
+        Tile tile =  this.grid.getTiles().get(position);
         Collapse collapse = new Collapse(tile, pickTileConfiguration(tile));
         collapse.collapse();
 
@@ -111,7 +112,7 @@ public class WaveFunctionCollapseAlgorithm {
      * @return true if all tiles are collapsed, false otherwise
      */
     private boolean isCompleted() {
-        return this.tilesCollapsed == this.parameters.totalTiles();
+        return this.tilesCollapsed == this.grid.totalTiles();
     }
 
     /**
@@ -121,7 +122,7 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private void pause() {
         try {
-            Thread.sleep(this.parameters.algorithmSpeed());
+            Thread.sleep(this.algorithmSpeed);
         }
         catch (InterruptedException e) {
             System.out.println(e);
@@ -135,13 +136,13 @@ public class WaveFunctionCollapseAlgorithm {
      * @return the Tile to be collapsed next
      */
     private Collapse pickNextCollapse() {
-        int minimalEntropy = this.tiles.values().stream()
+        int minimalEntropy = this.grid.getTiles().values().stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .map(Tile::getEntropy)
                 .min(Integer::compareTo).get()
                 + this.entropyRandomScore;
 
-        List<Tile> collapseCandidates = this.tiles.values()
+        List<Tile> collapseCandidates = this.grid.getTiles().values()
                 .stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .filter(tile -> tile.getEntropy() <= minimalEntropy)
@@ -170,34 +171,6 @@ public class WaveFunctionCollapseAlgorithm {
         return WaveFunctionCollapseAlgorithm.getRandomFromList(configurations);
     }
 
-    private static <T extends Object> T getRandomFromList(final List<T> list) {
-        int i = new Random().nextInt(list.size());
-        return list.get(i);
-    }
-
-    /**
-     * Updates the entropies of the Tiles adjacent to the given Tile
-     *
-     * @param collapsed the Tile whose neighbours' entropies are updated
-     */
-    private void updateEntropiesOfAdjacent(final Tile collapsed) {
-        int lastRow = this.parameters.tilesVertical() - 1;
-        int lastCol = this.parameters.tilesHorizontal() - 1;
-        int row = collapsed.getPosition().row();
-        int col = collapsed.getPosition().col();
-
-        Set<Tile> adjacentTiles = new HashSet<>();
-        if (row != 0) adjacentTiles.add(this.tiles.get(new Position(row - 1, col)));
-        if (row != lastRow) adjacentTiles.add(this.tiles.get(new Position(row + 1, col)));
-        if (col != 0) adjacentTiles.add(this.tiles.get(new Position(row, col - 1)));
-        if (col != lastCol) adjacentTiles.add(this.tiles.get(new Position(row, col + 1)));
-
-        adjacentTiles.stream()
-                .filter(Predicate.not(Tile::isCollapsed))
-                .forEach(tile -> tile.setEntropy(getValidTileConfigurations(tile).size()));
-    }
-
-
     /**
      * Returns all possible TileConfigurations of a given Tile
      * by checking all adjacent edges
@@ -208,7 +181,7 @@ public class WaveFunctionCollapseAlgorithm {
         // returns true if a configuration matches all four adjacent edges
         Predicate<TileConfiguration> cond = config -> {
             for (int i=0; i<4; i++) {
-                Optional<EdgeType> adjacent = getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
+                Optional<EdgeType> adjacent = this.grid.getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
                 if (adjacent.isEmpty()) continue;
                 if (adjacent.get() != config.edges().get(i)) return false;
             }
@@ -222,69 +195,30 @@ public class WaveFunctionCollapseAlgorithm {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-
     /**
-     * returns the EdgeType that is adjacent to this tile in the given direction
+     * Updates the entropies of the Tiles adjacent to the given Tile
      *
-     * @param direction the direction of adjacency
-     * @return the adjacent EdgeType or Optional.empty() if there is none
+     * @param collapsed the Tile whose neighbours' entropies are updated
      */
-    private Optional<EdgeType> getAdjacentEdge(final Tile tile, final Direction direction) {
-        Optional<Tile> adjacentTile = getAdjacentTile(tile, direction);
-
-        if (adjacentTile.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Optional<TileConfiguration> adjacentTileImageConfiguration = adjacentTile.get().getTileImageConfiguration();
-
-        if (adjacentTileImageConfiguration.isEmpty()) {
-            return Optional.empty();
-        }
-
-        TileConfiguration adjacentTIC = adjacentTileImageConfiguration.get();
-        int directionAsInt = TileConfiguration.directionToInt(direction);
-        EdgeType adjacentEdge = adjacentTIC.edges().get((directionAsInt+2)%4);
-
-        return Optional.of(adjacentEdge);
+    private void updateEntropiesOfAdjacent(final Tile collapsed) {
+        Direction.ALL_DIRECTIONS
+                .stream()
+                .map(dir -> this.grid.getAdjacentTile(collapsed, dir))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(Predicate.not(Tile::isCollapsed))
+                .forEach(tile -> tile.setEntropy(getValidTileConfigurations(tile).size()));
     }
 
     /**
-     * returns the adjacent Tile to the given Tile in the given direction
+     * selects a random element from a List and returns it
      *
-     * @param tile the given Tile
-     * @param direction the direction of adjacency
-     * @return the tile that is adjacent or Optional.empty() if there is none
+     * @param list the given List
+     * @return a random element the List
+     * @param <T> the type parameter of the List
      */
-    private Optional<Tile> getAdjacentTile(final Tile tile, final Direction direction) {
-        final int lastRow = this.parameters.tilesVertical() - 1;
-        final int lastCol = this.parameters.tilesHorizontal() - 1;
-        Position position = tile.getPosition();
-        int row = position.row();
-        int col = position.col();
-
-        switch (direction) {
-            case ABOVE:
-                if (row != 0) {
-                    return Optional.of(this.tiles.get(new Position(row-1, col)));
-                }
-                break;
-            case RIGHT:
-                if (col != lastCol) {
-                    return Optional.of(this.tiles.get(new Position(row, col+1)));
-                }
-                break;
-            case BELOW:
-                if (row != lastRow) {
-                    return Optional.of(this.tiles.get(new Position(row+1, col)));
-                }
-                break;
-            case LEFT:
-                if (col != 0) {
-                    return Optional.of(this.tiles.get(new Position(row, col-1)));
-                }
-                break;
-        }
-        return Optional.empty();
+    private static <T extends Object> T getRandomFromList(final List<T> list) {
+        int i = new Random().nextInt(list.size());
+        return list.get(i);
     }
 }

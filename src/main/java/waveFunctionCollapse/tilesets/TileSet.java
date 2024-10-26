@@ -46,6 +46,23 @@ public abstract class TileSet {
         }
     }
 
+    public final int getNumberOfTileConfigurations() {
+        return this.numberOfTileConfigurations;
+    }
+
+
+    /**
+     * returns all TileConfigurations of the TileSet as a Set
+     *
+     * @return all TileConfigurations as a Set
+     */
+    public final Set<TileConfiguration> getAllTileImageConfigurations() {
+        return this.allTileConfigurations;
+    }
+
+    protected abstract List<String> getFileNames();
+    protected abstract List<Set<Integer>> getRotations();
+    protected abstract List<ArrayList<EdgeType>> getEdges();
 
     /**
      * creates a BufferedImage from the given file path
@@ -63,7 +80,6 @@ public abstract class TileSet {
         }
         return image;
     }
-
 
     /**
      * rotates the given image by as many 90-degree steps as given in rotation
@@ -88,18 +104,6 @@ public abstract class TileSet {
         return rotatedImage;
     }
 
-    public final int getNumberOfTileConfigurations() {
-        return this.numberOfTileConfigurations;
-    }
-
-    public final Set<TileConfiguration> getAllTileImageConfigurations() {
-        return this.allTileConfigurations;
-    }
-
-    protected abstract List<String> getFileNames();
-    protected abstract List<Set<Integer>> getRotations();
-    protected abstract List<ArrayList<EdgeType>> getEdges();
-
 
     /**
      * rotates the elements in ArrayList of EdgeTypes so that in the
@@ -109,7 +113,7 @@ public abstract class TileSet {
      * @param rotation the rotation
      * @return the new List of EdgeType
      */
-    private final List<EdgeType> rotateEdges(final ArrayList<EdgeType> edges, final int rotation) {
+    private List<EdgeType> rotateEdges(final ArrayList<EdgeType> edges, final int rotation) {
         ArrayList<EdgeType> edgesCopy = new ArrayList<>(edges);
         Collections.rotate(edgesCopy, rotation);
 

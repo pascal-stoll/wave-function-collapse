@@ -1,7 +1,5 @@
 package waveFunctionCollapse.algorithm;
 
-import waveFunctionCollapse.tilesets.TileSet;
-
 import java.awt.*;
 
 public record AlgorithmParameters(Dimension dimension, int tileSize, int algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
@@ -14,12 +12,9 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, int algorit
         return dimension.height / tileSize;
     }
 
-    public int totalTiles() {
-        return tilesHorizontal()*tilesVertical();
-    }
+
 
     public static class Builder {
-        private TileSet tileSet;
         private Dimension dimension;
         private int tileSize, algorithmSpeed;
         private StartConfiguration startConfiguration;
