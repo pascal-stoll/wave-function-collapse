@@ -1,11 +1,28 @@
 package waveFunctionCollapse.parameters;
 
-import java.awt.*;
+import waveFunctionCollapse.tilesetdefinition.EdgeType;
 
-public record AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
+import java.awt.*;
+import java.util.Optional;
+
+public record AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor, Optional<EdgeType> borderEdge) {
 
     public AlgorithmParameters {
         if (algorithmSpeed < 0) algorithmSpeed = 0;
+    }
+
+    /**
+     * Constructor if borderEdge is ignored
+     */
+    public AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
+        this(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, Optional.empty());
+    }
+
+    /**
+     * Constructor if borderEdge is defined
+     */
+    public AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor, EdgeType borderEdge) {
+        this(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, Optional.of(borderEdge));
     }
 
     public int tilesHorizontal() {
@@ -16,16 +33,16 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, short algor
         return dimension.height / tileSize;
     }
 
-
-
     public static class Builder {
         private Dimension dimension;
         private int tileSize;
         private short algorithmSpeed;
         private StartConfiguration startConfiguration;
         private float nonRandomFactor;
+        private Optional<EdgeType> borderEdge;
 
         public Builder() {
+            this.borderEdge = Optional.empty();
         }
 
         public Builder dimension(final Dimension dimension) {
@@ -53,11 +70,16 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, short algor
             return this;
         }
 
+        public Builder borderEdge(final EdgeType borderEdge) {
+            this.borderEdge = Optional.of(borderEdge);
+            return this;
+        }
+
         public AlgorithmParameters build() {
             if (dimension == null || tileSize == 0) {
                 throw new RuntimeException("Not all necessary parameters were specified in the builder.");
             }
-            return new AlgorithmParameters(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor);
+            return new AlgorithmParameters(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, borderEdge);
         }
     }
 }

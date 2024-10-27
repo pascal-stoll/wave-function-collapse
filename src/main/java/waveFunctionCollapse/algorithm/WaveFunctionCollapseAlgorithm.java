@@ -37,7 +37,7 @@ public class WaveFunctionCollapseAlgorithm {
         this.delayInMs = parameters.algorithmSpeed();
 
         // Sets up Grid, GridFrame and Tiles
-        this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical());
+        this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical(), parameters.borderEdge());
         GridFrame frame = new GridFrame(parameters.tilesHorizontal(), parameters.tilesVertical());
 
 
@@ -190,7 +190,7 @@ public class WaveFunctionCollapseAlgorithm {
             for (int i=0; i<4; i++) {
                 Optional<EdgeType> adjacent = this.grid.getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
                 if (adjacent.isEmpty()) continue;
-                if (adjacent.get() != config.edges().get(i)) return false;
+                if (!adjacent.get().equals(config.edges().get(i))) return false;
             }
             return true;
         };

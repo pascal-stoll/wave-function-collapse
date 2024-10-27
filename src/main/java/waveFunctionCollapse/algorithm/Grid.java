@@ -11,11 +11,13 @@ class Grid {
     private final HashMap<Position, Tile> tiles;
     private final int tilesHorizontal;
     private final int tilesVertical;
+    private final Optional<EdgeType> borderEdge;
 
-    Grid(final int tilesHorizontal, final int tilesVertical) {
+    Grid(final int tilesHorizontal, final int tilesVertical, final Optional<EdgeType> borderEdge) {
         this.tilesHorizontal = tilesHorizontal;
         this.tilesVertical = tilesVertical;
         this.tiles = new HashMap<>();
+        this.borderEdge = borderEdge;
     }
 
     public HashMap<Position, Tile> getTiles() {
@@ -35,19 +37,12 @@ class Grid {
     public final Optional<EdgeType> getAdjacentEdge(final Tile tile, final Direction direction) {
         Optional<Tile> adjacentTile = getAdjacentTile(tile, direction);
 
-        if (adjacentTile.isEmpty()) {
-            return Optional.empty();
-        }
+        if (adjacentTile.isEmpty()) return borderEdge;
+        if (adjacentTile.get().getTileImageConfiguration().isEmpty()) return Optional.empty();
 
-        Optional<TileConfiguration> adjacentTileImageConfiguration = adjacentTile.get().getTileImageConfiguration();
-
-        if (adjacentTileImageConfiguration.isEmpty()) {
-            return Optional.empty();
-        }
-
-        TileConfiguration adjacentTIC = adjacentTileImageConfiguration.get();
+        TileConfiguration adjacentConfiguration = adjacentTile.get().getTileImageConfiguration().get();
         int directionAsInt = TileConfiguration.directionToInt(direction);
-        EdgeType adjacentEdge = adjacentTIC.edges().get((directionAsInt+2)%4);
+        EdgeType adjacentEdge = adjacentConfiguration.edges().get((directionAsInt+2)%4);
 
         return Optional.of(adjacentEdge);
     }
@@ -62,9 +57,8 @@ class Grid {
     public final Optional<Tile> getAdjacentTile(final Tile tile, final Direction direction) {
         final int lastRow = this.tilesVertical - 1;
         final int lastCol = this.tilesHorizontal- 1;
-        Position position = tile.getPosition();
-        int row = position.row();
-        int col = position.col();
+        final int row = tile.getPosition().row();
+        final int col = tile.getPosition().col();
 
         switch (direction) {
             case ABOVE:
