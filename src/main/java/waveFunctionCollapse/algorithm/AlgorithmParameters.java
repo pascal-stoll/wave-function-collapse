@@ -2,7 +2,11 @@ package waveFunctionCollapse.algorithm;
 
 import java.awt.*;
 
-public record AlgorithmParameters(Dimension dimension, int tileSize, int algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
+public record AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
+
+    public AlgorithmParameters {
+        if (algorithmSpeed < 0) algorithmSpeed = 0;
+    }
 
     public int tilesHorizontal() {
         return dimension.width / tileSize;
@@ -16,7 +20,8 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, int algorit
 
     public static class Builder {
         private Dimension dimension;
-        private int tileSize, algorithmSpeed;
+        private int tileSize;
+        private short algorithmSpeed;
         private StartConfiguration startConfiguration;
         private float nonRandomFactor;
 
@@ -33,7 +38,7 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, int algorit
             return this;
         }
 
-        public Builder algorithmSpeed(final int algorithmSpeed) {
+        public Builder algorithmSpeed(final short algorithmSpeed) {
             this.algorithmSpeed = algorithmSpeed;
             return this;
         }

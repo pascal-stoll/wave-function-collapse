@@ -1,7 +1,5 @@
 package waveFunctionCollapse.tilesets;
 
-import waveFunctionCollapse.algorithm.EdgeType;
-
 import java.util.*;
 
 public class CarcassoneTileSet extends TileSet {
@@ -10,84 +8,55 @@ public class CarcassoneTileSet extends TileSet {
         super("Carcassonne");
     }
 
-    @Override
     protected List<String> getFileNames() {
         // List of file names of the Tiles
         return new ArrayList<>(Arrays.asList(
-                "2_city_stub.jpg",
-                "3_city.jpg",
-                "3_city_path.jpg",
-                "chapel.jpg",
-                "chapel_path.jpg",
-                "city.jpg",
-                "curved_path.jpg",
-                "diagonal.jpg",
-                "diagonal_path.jpg",
-                "opposite_city_stub.jpg",
-                "plus_joint.jpg",
-                "single_stub.jpg",
-                "single_stub_path.jpg",
-                "single_stub_path_2.jpg",
-                "straight_path.jpg",
-                "stub_straight_path.jpg",
-                "t_joint.jpg",
-                "t_joint_stub.jpg",
-                "tube.jpg"
+
                 ));
     }
 
-    @Override
+
     protected List<Set<Integer>> getRotations() {
         return new ArrayList<>(Arrays.asList(
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1, 2, 3)),
-                new HashSet<>(List.of(0, 1)),
-                new HashSet<>(List.of(0))
+
                 ));
     }
 
-    @Override
     protected List<ArrayList<EdgeType>> getEdges() {
+
+
+        return new ArrayList<>(List.of(
+
+        ));
+    }
+
+    @Override
+    protected List<TileType> defineTiles() {
         // define edgeTypes
         EdgeType city = new EdgeType("city");
         EdgeType path = new EdgeType("path");
         EdgeType green = new EdgeType("green");
 
-        return new ArrayList<>(List.of(
-                new ArrayList<>(List.of(city, green, green, city)),
-                new ArrayList<>(List.of(city, city, green, city)),
-                new ArrayList<>(List.of(city, city, path, city)),
-                new ArrayList<>(List.of(green, green, green, green)),
-                new ArrayList<>(List.of(green, green, path, green)),
-                new ArrayList<>(List.of(city, city, city, city)),
-                new ArrayList<>(List.of(green, green, path, path)),
-                new ArrayList<>(List.of(city, green, green, city)),
-                new ArrayList<>(List.of(city, path, path, city)),
-                new ArrayList<>(List.of(city, green, city, green)),
-                new ArrayList<>(List.of(path, path, path, path)),
-                new ArrayList<>(List.of(city, green, green, green)),
-                new ArrayList<>(List.of(city, green, path, path)),
-                new ArrayList<>(List.of(city, path, path, green)),
-                new ArrayList<>(List.of(path, green, path, green)),
-                new ArrayList<>(List.of(city, path, green, path)),
-                new ArrayList<>(List.of(green, path, path, path)),
-                new ArrayList<>(List.of(city, path, path, path)),
-                new ArrayList<>(List.of(green, city, green, city))
-        ));
+        return List.of(
+                new TileType("2_city_stub.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, green, green, city}),
+                new TileType("3_city.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, city, green, city}),
+                new TileType("3_city_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, city, path, city}),
+                new TileType("chapel.jpg", new Integer[]{0}, new EdgeType[]{green, green, green, green}),
+                new TileType("chapel_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{green, green, path, green}),
+                new TileType("city.jpg", new Integer[]{0}, new EdgeType[]{city, city, city, city}),
+                new TileType("curved_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{green, green, path, path}),
+                new TileType("diagonal.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, green, green, city}),
+                new TileType("diagonal_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, path, path, city}),
+                new TileType("opposite_city_stub.jpg", new Integer[]{0, 1}, new EdgeType[]{city, green, city, green}),
+                new TileType("plus_joint.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{path, path, path, path}),
+                new TileType("single_stub.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, green, green, green}),
+                new TileType("single_stub_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, green, path, path}),
+                new TileType("single_stub_path_2.jpg", new Integer[]{0, 1}, new EdgeType[]{city, path, path, green}),
+                new TileType("straight_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{path, green, path, green}),
+                new TileType("stub_straight_path.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{city, path, green, path}),
+                new TileType("t_joint.jpg", new Integer[]{0, 1, 2, 3}, new EdgeType[]{green, path, path, path}),
+                new TileType("t_joint_stub.jpg", new Integer[]{0, 1}, new EdgeType[]{city, path, path, path}),
+                new TileType("tube.jpg", new Integer[]{0}, new EdgeType[]{green, city, green, city})
+        );
     }
 }

@@ -1,9 +1,9 @@
 package waveFunctionCollapse.algorithm;
 
 import waveFunctionCollapse.gui.TileLabel;
+import waveFunctionCollapse.tilesets.TileConfiguration;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A Tile in a grid

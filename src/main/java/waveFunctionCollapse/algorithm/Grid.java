@@ -1,15 +1,18 @@
 package waveFunctionCollapse.algorithm;
 
+import waveFunctionCollapse.tilesets.EdgeType;
+import waveFunctionCollapse.tilesets.TileConfiguration;
+
 import java.util.HashMap;
 import java.util.Optional;
 
-public class Grid {
+class Grid {
 
     private final HashMap<Position, Tile> tiles;
     private final int tilesHorizontal;
     private final int tilesVertical;
 
-    public Grid(final int tilesHorizontal, final int tilesVertical) {
+    Grid(final int tilesHorizontal, final int tilesVertical) {
         this.tilesHorizontal = tilesHorizontal;
         this.tilesVertical = tilesVertical;
         this.tiles = new HashMap<>();

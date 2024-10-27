@@ -12,14 +12,18 @@ import java.awt.*;
  */
 public class WaveFunctionCollapseApp {
 
+    // TODO:
+    // - probabilities of tiles
+    // - edgeTile EdgeType
+    // - backtrack & error recovering
     public static void main(String[] args) {
 
         // Parameters for the algorithm
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int tileSize = 60;
-        int algorithmSpeed = 5;
+        int tileSize = 15;
+        short algorithmSpeed = 1; // delay in ms between two collapses
         float nonRandomFactor = 0.2f; // as percentage
-        StartConfiguration startConfiguration = StartConfiguration.MULTISTART_RANDOM;
+        StartConfiguration startConfiguration = StartConfiguration.MIDDLE;
 
         AlgorithmParameters params = new AlgorithmParameters.Builder()
                 .dimension(dimension)
@@ -30,7 +34,7 @@ public class WaveFunctionCollapseApp {
                 .build();
 
         // TileSet for the algorithm
-        TileSet tileSet = new LabyrinthTileSet();
+        TileSet tileSet = new CarcassoneTileSet();
 
         // Initialize
         WaveFunctionCollapseAlgorithm algorithm =

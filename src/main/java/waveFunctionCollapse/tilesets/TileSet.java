@@ -1,8 +1,5 @@
 package waveFunctionCollapse.tilesets;
 
-import waveFunctionCollapse.algorithm.EdgeType;
-import waveFunctionCollapse.algorithm.TileConfiguration;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,50 +16,46 @@ import java.util.*;
  */
 public abstract class TileSet {
 
-    private final int numberOfTileConfigurations;
     private final Set<TileConfiguration> allTileConfigurations;
 
     public TileSet(final String directoryPath) {
         final String projectPath = "src/main/resources/";
-
-        List<String> fileNames = getFileNames();
-        List<Set<Integer>> rotations = getRotations();
-        List<ArrayList<EdgeType>> edges = getEdges();
-
-        this.numberOfTileConfigurations = rotations.stream().map(Set::size).reduce(0, Integer::sum);
-
-        int numberOfTiles = fileNames.size();
+        final List<TileType> tileTypes = defineTiles();
 
         this.allTileConfigurations = new HashSet<>();
-        for (int i = 0; i < numberOfTiles; i++) {
-            String fullImagePath = projectPath + directoryPath + "/" + fileNames.get(i);
-            BufferedImage image = initializeImage(fullImagePath);
+        for (TileType tileType : tileTypes) {
+            try {
+                final String fullImagePath = projectPath + directoryPath + "/" + tileType.fileName();
+                final BufferedImage image = initializeImage(fullImagePath);
 
-            for (int rotation : rotations.get(i)) {
-                Image finalImage = rotateImage(image, rotation);
-                List<EdgeType> rotatedEdges = rotateEdges(edges.get(i), rotation);
-                this.allTileConfigurations.add(new TileConfiguration(finalImage, rotation, rotatedEdges));
+                for (int rotation : tileType.rotations()) {
+                    Image finalImage = rotateImage(image, rotation);
+                    List<EdgeType> rotatedEdges = rotateEdges(tileType.edges(), rotation);
+                    this.allTileConfigurations.add(new TileConfiguration(finalImage, rotation, rotatedEdges));
+                }
+            }
+            catch (IOException e) {
+                throw new RuntimeException("No tileType found under the given fileName " + tileType.fileName());
             }
         }
     }
-
-    public final int getNumberOfTileConfigurations() {
-        return this.numberOfTileConfigurations;
-    }
-
 
     /**
      * returns all TileConfigurations of the TileSet as a Set
      *
      * @return all TileConfigurations as a Set
      */
-    public final Set<TileConfiguration> getAllTileImageConfigurations() {
-        return this.allTileConfigurations;
+    public final Set<TileConfiguration> getAllTileConfigurations() {
+        return new HashSet<>(this.allTileConfigurations);
     }
 
-    protected abstract List<String> getFileNames();
-    protected abstract List<Set<Integer>> getRotations();
-    protected abstract List<ArrayList<EdgeType>> getEdges();
+    /**
+     * defines the Tiles of the TileSet by returning a List of Tiles.
+     * Method is overwritten in child classes to define the respective TileSet
+     *
+     * @return a List of all Tiles in this TileSet
+     */
+    protected abstract List<TileType> defineTiles();
 
     /**
      * creates a BufferedImage from the given file path
@@ -71,14 +64,8 @@ public abstract class TileSet {
      * @return the BufferedImage of the given file
      * @throws IOException if the image is not found
      */
-    private BufferedImage initializeImage(final String imagePath) {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File(imagePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
+    private BufferedImage initializeImage(final String imagePath) throws IOException {
+        return ImageIO.read(new File(imagePath));
     }
 
     /**
@@ -106,8 +93,7 @@ public abstract class TileSet {
 
 
     /**
-     * rotates the elements in ArrayList of EdgeTypes so that in the
-     * TileConfiguration the edges are in correct order
+     * rotates the List of edges, so they are correct order given the rotation
      *
      * @param edges the current List of edges
      * @param rotation the rotation

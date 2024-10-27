@@ -1,6 +1,8 @@
 package waveFunctionCollapse.algorithm;
 
 import waveFunctionCollapse.gui.GridFrame;
+import waveFunctionCollapse.tilesets.EdgeType;
+import waveFunctionCollapse.tilesets.TileConfiguration;
 import waveFunctionCollapse.tilesets.TileSet;
 
 import java.util.*;
@@ -12,10 +14,14 @@ import java.util.stream.Collectors;
  */
 public class WaveFunctionCollapseAlgorithm {
 
-    private final TileSet tileSet;
+    private final Set<TileConfiguration> tileConfigurations;
     private final Grid grid;
     private final int entropyRandomScore;
-    private final int algorithmSpeed;
+
+    /**
+     * dependent on the given algorithmSpeed parameter, can reach from 0ms to 1000ms
+     */
+    private final int delayInMs;
     private int tilesCollapsed = 0;
 
     /**
@@ -25,9 +31,9 @@ public class WaveFunctionCollapseAlgorithm {
      * @param parameters all parameters relevant to the algorithm
      */
     public WaveFunctionCollapseAlgorithm(final TileSet tileSet, final AlgorithmParameters parameters) {
-        this.tileSet = tileSet;
-        this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileSet.getNumberOfTileConfigurations());
-        this.algorithmSpeed = parameters.algorithmSpeed();
+        this.tileConfigurations = tileSet.getAllTileConfigurations();
+        this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileConfigurations.size());
+        this.delayInMs = parameters.algorithmSpeed();
 
         // Sets up Grid, GridFrame and Tiles
         this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical());
@@ -122,7 +128,7 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private void pause() {
         try {
-            Thread.sleep(this.algorithmSpeed);
+            Thread.sleep(this.delayInMs);
         }
         catch (InterruptedException e) {
             System.out.println(e);
@@ -188,8 +194,7 @@ public class WaveFunctionCollapseAlgorithm {
             return true;
         };
 
-        return this.tileSet
-                .getAllTileImageConfigurations()
+        return this.tileConfigurations
                 .stream()
                 .filter(cond)
                 .collect(Collectors.toCollection(ArrayList::new));

@@ -1,15 +1,18 @@
-package waveFunctionCollapse.algorithm;
+package waveFunctionCollapse.tilesets;
 
-import waveFunctionCollapse.tilesets.TileSet;
+import waveFunctionCollapse.algorithm.Direction;
 
 import java.awt.*;
 import java.util.List;
 
 /**
- * A TileConfiguration is a specific Tile together with its rotation
+ * A TileConfiguration is a specific TileType together with its rotation
  */
 public record TileConfiguration(Image image, int rotation, List<EdgeType> edges) {
 
+    public TileConfiguration {
+
+    }
 
     /**
      * Converts a Direction into an int, compatible for calculating with rotations
