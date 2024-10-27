@@ -1,4 +1,4 @@
-package waveFunctionCollapse.tilesets;
+package waveFunctionCollapse.tilesetdefinition;
 
 import waveFunctionCollapse.algorithm.Direction;
 

@@ -1,8 +1,9 @@
 package waveFunctionCollapse;
 
-import waveFunctionCollapse.algorithm.AlgorithmParameters;
-import waveFunctionCollapse.algorithm.StartConfiguration;
+import waveFunctionCollapse.parameters.AlgorithmParameters;
+import waveFunctionCollapse.parameters.StartConfiguration;
 import waveFunctionCollapse.algorithm.WaveFunctionCollapseAlgorithm;
+import waveFunctionCollapse.tilesetdefinition.TileSet;
 import waveFunctionCollapse.tilesets.*;
 
 import java.awt.*;

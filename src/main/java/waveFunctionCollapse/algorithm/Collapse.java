@@ -1,6 +1,6 @@
 package waveFunctionCollapse.algorithm;
 
-import waveFunctionCollapse.tilesets.TileConfiguration;
+import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 
 /**
  * Encapsulates a Tile and its configuration that are being collapsed in one step of the algorithm

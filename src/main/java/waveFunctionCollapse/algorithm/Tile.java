@@ -1,7 +1,7 @@
 package waveFunctionCollapse.algorithm;
 
 import waveFunctionCollapse.gui.TileLabel;
-import waveFunctionCollapse.tilesets.TileConfiguration;
+import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 
 import java.util.*;
 

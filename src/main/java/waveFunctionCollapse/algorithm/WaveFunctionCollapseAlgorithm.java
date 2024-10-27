@@ -1,9 +1,10 @@
 package waveFunctionCollapse.algorithm;
 
 import waveFunctionCollapse.gui.GridFrame;
-import waveFunctionCollapse.tilesets.EdgeType;
-import waveFunctionCollapse.tilesets.TileConfiguration;
-import waveFunctionCollapse.tilesets.TileSet;
+import waveFunctionCollapse.parameters.AlgorithmParameters;
+import waveFunctionCollapse.tilesetdefinition.EdgeType;
+import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
+import waveFunctionCollapse.tilesetdefinition.TileSet;
 
 import java.util.*;
 import java.util.function.Predicate;

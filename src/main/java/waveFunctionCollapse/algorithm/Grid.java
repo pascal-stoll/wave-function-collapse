@@ -1,7 +1,7 @@
 package waveFunctionCollapse.algorithm;
 
-import waveFunctionCollapse.tilesets.EdgeType;
-import waveFunctionCollapse.tilesets.TileConfiguration;
+import waveFunctionCollapse.tilesetdefinition.EdgeType;
+import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 
 import java.util.HashMap;
 import java.util.Optional;

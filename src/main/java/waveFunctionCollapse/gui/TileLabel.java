@@ -1,6 +1,6 @@
 package waveFunctionCollapse.gui;
 
-import waveFunctionCollapse.tilesets.TileConfiguration;
+import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package waveFunctionCollapse.algorithm;
+package waveFunctionCollapse.parameters;
 
 import java.awt.*;
 

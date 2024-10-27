@@ -1,4 +1,4 @@
-package waveFunctionCollapse.algorithm;
+package waveFunctionCollapse.parameters;
 
 public enum StartConfiguration {
     RANDOM,                 // starts with a random tile

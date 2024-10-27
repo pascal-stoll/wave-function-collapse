@@ -1,4 +1,4 @@
-package waveFunctionCollapse.tilesets;
+package waveFunctionCollapse.tilesetdefinition;
 
 /**
  * A type of Edge
