@@ -15,6 +15,7 @@ public class Tile {
 
     private final TileLabel tileLabel;
     private boolean collapsed;
+    private int collapseTime;
     private final Position position;
     private int entropy;
     private Optional<TileConfiguration> tileConfiguration;
@@ -48,26 +49,41 @@ public class Tile {
         return this.entropy;
     }
 
+    public final int getCollapseTime() {
+        return this.collapseTime;
+    }
+
     public final void setEntropy(final int value) {
         this.entropy = value;
     }
-    public final Optional<TileConfiguration> getTileImageConfiguration() {
+
+    public final Optional<TileConfiguration> getTileConfiguration() {
         return this.tileConfiguration;
     }
-
 
     /**
      * displays the given TileConfiguration in the GUI and updates the state of this Tile
      *
      * @param configuration the TileConfiguration to be displayed
      */
-    public void display(final TileConfiguration configuration) {
+    public void display(final TileConfiguration configuration, int time) {
         this.tileLabel.showImageConfiguration(configuration);
         this.entropy = 0;
         this.collapsed = true;
+        this.collapseTime = time;
         this.tileConfiguration = Optional.of(configuration);
     }
 
+    /**
+     * Hides the ImageConfiguration of a Tile.
+     * Used in error case when no valid collapse is possible to undo collapses
+     */
+    public void hide() {
+        this.tileLabel.hideImageConfiguration();
+        this.collapsed = false;
+        this.collapseTime = 0;
+        this.tileConfiguration = Optional.empty();
+    }
 
     @Override
     public String toString() {

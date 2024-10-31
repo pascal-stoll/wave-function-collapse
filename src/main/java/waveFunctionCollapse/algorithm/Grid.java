@@ -38,9 +38,9 @@ class Grid {
         Optional<Tile> adjacentTile = getAdjacentTile(tile, direction);
 
         if (adjacentTile.isEmpty()) return borderEdge;
-        if (adjacentTile.get().getTileImageConfiguration().isEmpty()) return Optional.empty();
+        if (adjacentTile.get().getTileConfiguration().isEmpty()) return Optional.empty();
 
-        TileConfiguration adjacentConfiguration = adjacentTile.get().getTileImageConfiguration().get();
+        TileConfiguration adjacentConfiguration = adjacentTile.get().getTileConfiguration().get();
         int directionAsInt = TileConfiguration.directionToInt(direction);
         EdgeType adjacentEdge = adjacentConfiguration.edges().get((directionAsInt+2)%4);
 

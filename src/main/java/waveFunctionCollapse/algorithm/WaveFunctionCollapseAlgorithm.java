@@ -8,7 +8,6 @@ import waveFunctionCollapse.tilesetdefinition.TileSet;
 import waveFunctionCollapse.tilesetdefinition.TileType;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private final int delayInMs;
     private final Map<TileType, Float> probabilityDistribution;
-    private int tilesCollapsed = 0;
+    private int tilesCollapsed;
     private static final Random random =  new Random();
 
     /**
@@ -95,13 +94,17 @@ public class WaveFunctionCollapseAlgorithm {
      */
     public final void run() {
         while (!this.isCompleted()) {
-            Collapse collapse = pickNextCollapse();
-            collapse.collapse();
+            try {
+                Collapse collapse = pickNextCollapse();
+                collapse.collapse(this.tilesCollapsed);
 
-            // Update state of algorithm
-            this.tilesCollapsed++;
-            updateEntropiesOfAdjacent(collapse.tile());
-            pause();
+                this.tilesCollapsed++;
+                updateEntropiesOfAdjacent(collapse.tile());
+                pause();
+            }
+            catch(NoValidCollapseException e) {
+                pause();
+            }
         }
         System.out.println("Done!");
     }
@@ -115,12 +118,18 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private void collapseAtPosition(final Position position) {
         Tile tile =  this.grid.getTiles().get(position);
-        Collapse collapse = new Collapse(tile, pickTileConfiguration(tile));
-        collapse.collapse();
 
-        this.tilesCollapsed++;
-        updateEntropiesOfAdjacent(collapse.tile());
-        pause();
+        try {
+            Collapse collapse = new Collapse(tile, pickTileConfiguration(tile));
+            collapse.collapse(this.tilesCollapsed);
+
+            this.tilesCollapsed++;
+            updateEntropiesOfAdjacent(collapse.tile());
+            pause();
+        }
+        catch (NoValidCollapseException e) {
+            pause();
+        }
     }
 
     /**
@@ -142,7 +151,7 @@ public class WaveFunctionCollapseAlgorithm {
             Thread.sleep(this.delayInMs);
         }
         catch (InterruptedException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -152,7 +161,7 @@ public class WaveFunctionCollapseAlgorithm {
      *
      * @return the Tile to be collapsed next
      */
-    private Collapse pickNextCollapse() {
+    private Collapse pickNextCollapse() throws NoValidCollapseException {
         int minimalEntropy = this.grid.getTiles().values().stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .map(Tile::getEntropy)
@@ -180,7 +189,7 @@ public class WaveFunctionCollapseAlgorithm {
      * @return one randomly picked configuration
      * @throws RuntimeException if no configuration is possible
      */
-    private TileConfiguration pickTileConfiguration(final Tile nextCollapsed) {
+    private TileConfiguration pickTileConfiguration(final Tile nextCollapsed) throws NoValidCollapseException {
         List<TileConfiguration> configurations = getValidTileConfigurations(nextCollapsed);
         List<TileType> types = configurations.stream()
                 .map(TileConfiguration::tileType)
@@ -188,7 +197,31 @@ public class WaveFunctionCollapseAlgorithm {
 
         // TODO Handle error case better
         if (configurations.isEmpty()) {
-            throw new RuntimeException("Error. No valid collapse was found.");
+            System.out.println("No valid collapse found. Starting to un-Collapse a Tile.");
+
+            int maxTime = 0;
+            Tile target = null;
+            for (Direction dir : Direction.ALL_DIRECTIONS) {
+                Optional<Tile> adjacent = this.grid.getAdjacentTile(nextCollapsed, dir);
+                if (adjacent.isEmpty()) continue;
+
+                int collapseTime = adjacent.get().getCollapseTime();
+                if (collapseTime < maxTime) continue;
+
+                target = adjacent.get();
+                maxTime = collapseTime;
+            }
+
+            if (target == null) {
+                throw new RuntimeException("This should never occur. (Only possible if there are no TileConfigurations possible at all.)");
+            }
+
+            target.hide();
+            target.setEntropy(getValidTileConfigurations(target).size());
+            updateEntropiesOfAdjacent(target);
+            this.tilesCollapsed--;
+
+            throw new NoValidCollapseException();
         }
 
         // Random value between 0.0 and the sum of all probabilities of all possible TileTypes

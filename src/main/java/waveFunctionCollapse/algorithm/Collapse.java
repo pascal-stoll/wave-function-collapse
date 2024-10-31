@@ -9,7 +9,7 @@ public record Collapse (Tile tile, TileConfiguration configuration) {
     /**
      * triggers the collapse
      */
-    public void collapse() {
-        this.tile.display(this.configuration);
+    public void collapse(final int collapseTime) {
+        this.tile.display(this.configuration, collapseTime);
     }
 }

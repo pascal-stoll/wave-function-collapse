@@ -28,18 +28,16 @@ public class TileLabel extends JLabel {
      * @param configuration the configuration to be displayed
      */
     public final void showImageConfiguration(final TileConfiguration configuration) {
-        Image image = configuration.image();
-        int tileSize = this.tileSize;
-
-        Image scaledImage = image.getScaledInstance(tileSize, tileSize, Image.SCALE_SMOOTH);
-
+        Image scaledImage = configuration.image().getScaledInstance(this.tileSize, this.tileSize, Image.SCALE_SMOOTH);
         ImageIcon imageIcon = new ImageIcon(scaledImage);
+
         this.setIcon(imageIcon);
         this.setVisible(true);
     }
 
     public void hideImageConfiguration() {
-        // TODO
+        this.setIcon(null);
+        this.setVisible(false);
     }
 
     @Override
