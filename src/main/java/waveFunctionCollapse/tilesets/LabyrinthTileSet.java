@@ -28,10 +28,9 @@ public class LabyrinthTileSet extends TileSet {
         );
     }
 
-    @Override
-    public Map<TileType, Float> testProbDistribution() {
+    public Map<TileType, Float> probabilityDistribution1() {
         Map<TileType, Float> map = new HashMap<>();
-        float[] values = {1f, 1f, 0f, 0f, 1f, 0f};
+        float[] values = {1f, .2f, .2f, 1f, 5f, .2f};
         int i = 0;
         for (TileType type : defineTiles()) {
             map.put(type, values[i]);

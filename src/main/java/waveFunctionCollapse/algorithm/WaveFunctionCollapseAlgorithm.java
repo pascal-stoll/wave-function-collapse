@@ -27,6 +27,7 @@ public class WaveFunctionCollapseAlgorithm {
     private final int delayInMs;
     private final Map<TileType, Float> probabilityDistribution;
     private int tilesCollapsed = 0;
+    private static final Random random =  new Random();
 
     /**
      * Creates a new instance of the algorithm
@@ -78,7 +79,6 @@ public class WaveFunctionCollapseAlgorithm {
             case MULTISTART_RANDOM:
                 startCollapses = (int) Math.ceil(Math.log10(parameters.tilesHorizontal()*parameters.tilesVertical())) * 2;
                 Position randomPosition;
-                Random random = new Random();
                 for (int i=0; i<startCollapses; i++) {
                     int row = random.nextInt(parameters.tilesVertical() - 1);
                     int col = random.nextInt(parameters.tilesHorizontal() - 1);
@@ -182,35 +182,29 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private TileConfiguration pickTileConfiguration(final Tile nextCollapsed) {
         List<TileConfiguration> configurations = getValidTileConfigurations(nextCollapsed);
-
-        // TODO Handle error case better
-        if (configurations.isEmpty()) throw new RuntimeException("Error. No valid collapse was found.");
-
         List<TileType> types = configurations.stream()
                 .map(TileConfiguration::tileType)
                 .toList();
 
-        List<Float> typeProbs = types.stream().map(this.probabilityDistribution::get).toList();
-
-        float sum = typeProbs.stream().reduce(0f, Float::sum);
-
-        Random random = new Random();
-        float value = random.nextFloat() * sum;
-
-        int i = 0;
-        float currentSum = 0;
-
-        do {
-            currentSum += typeProbs.get(i);
-            i++;
+        // TODO Handle error case better
+        if (configurations.isEmpty()) {
+            throw new RuntimeException("Error. No valid collapse was found.");
         }
-        while(currentSum < value);
+
+        // Random value between 0.0 and the sum of all probabilities of all possible TileTypes
+        float value = random.nextFloat() *
+                types.stream()
+                .map(this.probabilityDistribution::get)
+                .reduce(0f, Float::sum);
+
+        int i;
+        float currentSum = 0;
+        for(i=0; currentSum<value; i++) {
+            currentSum += this.probabilityDistribution.get(types.get(i));
+        }
 
         TileType chosenType = types.get(i-1);
-
         List<TileConfiguration> configs = configurations.stream().filter(config -> chosenType.equals(config.tileType())).toList();
-
-
 
         return WaveFunctionCollapseAlgorithm.getRandomFromList(configs);
     }
@@ -261,7 +255,7 @@ public class WaveFunctionCollapseAlgorithm {
      * @param <T> the type parameter of the List
      */
     private static <T extends Object> T getRandomFromList(final List<T> list) {
-        int i = new Random().nextInt(list.size());
+        int i = random.nextInt(list.size());
         return list.get(i);
     }
 }

@@ -69,8 +69,6 @@ public abstract class TileSet {
      */
     protected abstract List<TileType> defineTiles();
 
-    public abstract Map<TileType, Float> testProbDistribution();
-
 
     /**
      * creates a BufferedImage from the given file path
