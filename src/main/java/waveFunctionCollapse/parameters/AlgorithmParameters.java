@@ -1,28 +1,18 @@
 package waveFunctionCollapse.parameters;
 
+import waveFunctionCollapse.algorithm.Tile;
 import waveFunctionCollapse.tilesetdefinition.EdgeType;
+import waveFunctionCollapse.tilesetdefinition.TileType;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-public record AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor, Optional<EdgeType> borderEdge) {
+public record AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor, Optional<EdgeType> borderEdge, Map<TileType, Float> probabilityDistribution) {
 
     public AlgorithmParameters {
         if (algorithmSpeed < 0) algorithmSpeed = 0;
-    }
-
-    /**
-     * Constructor if borderEdge is ignored
-     */
-    public AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor) {
-        this(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, Optional.empty());
-    }
-
-    /**
-     * Constructor if borderEdge is defined
-     */
-    public AlgorithmParameters(Dimension dimension, int tileSize, short algorithmSpeed, StartConfiguration startConfiguration, float nonRandomFactor, EdgeType borderEdge) {
-        this(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, Optional.of(borderEdge));
     }
 
     public int tilesHorizontal() {
@@ -40,6 +30,7 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, short algor
         private StartConfiguration startConfiguration;
         private float nonRandomFactor;
         private Optional<EdgeType> borderEdge;
+        private HashMap<TileType, Float> probabilityDistribution;
 
         public Builder() {
             this.borderEdge = Optional.empty();
@@ -75,11 +66,16 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, short algor
             return this;
         }
 
+        public Builder probabilityDistribution(final Map<TileType, Float> distribution) {
+            this.probabilityDistribution = new HashMap<>(distribution);
+            return this;
+        }
+
         public AlgorithmParameters build() {
             if (dimension == null || tileSize == 0) {
                 throw new RuntimeException("Not all necessary parameters were specified in the builder.");
             }
-            return new AlgorithmParameters(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, borderEdge);
+            return new AlgorithmParameters(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, borderEdge, probabilityDistribution);
         }
     }
 }

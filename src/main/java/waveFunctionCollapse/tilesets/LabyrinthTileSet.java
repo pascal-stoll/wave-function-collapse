@@ -27,4 +27,17 @@ public class LabyrinthTileSet extends TileSet {
                 new TileType("tile6.png",   new Integer[]{0, 1, 2, 3},    new EdgeType[]{edge010, edge000, edge000, edge000})
         );
     }
+
+    @Override
+    public Map<TileType, Float> testProbDistribution() {
+        Map<TileType, Float> map = new HashMap<>();
+        float[] values = {1f, 1f, 0f, 0f, 1f, 0f};
+        int i = 0;
+        for (TileType type : defineTiles()) {
+            map.put(type, values[i]);
+            i++;
+        }
+
+        return map;
+    }
 }

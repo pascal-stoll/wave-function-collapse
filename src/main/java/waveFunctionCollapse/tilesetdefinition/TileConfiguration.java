@@ -8,11 +8,9 @@ import java.util.List;
 /**
  * A TileConfiguration is a specific TileType together with its rotation
  */
-public record TileConfiguration(Image image, int rotation, List<EdgeType> edges) {
+public record TileConfiguration(TileType tileType, Image image, int rotation, List<EdgeType> edges) implements Comparable<TileConfiguration> {
 
-    public TileConfiguration {
-
-    }
+    public TileConfiguration {    }
 
     /**
      * Converts a Direction into an int, compatible for calculating with rotations
@@ -32,5 +30,10 @@ public record TileConfiguration(Image image, int rotation, List<EdgeType> edges)
     @Override
     public String toString() {
         return "[" + this.image + ", rotation: " + this.rotation + "]";
+    }
+
+    @Override
+    public int compareTo(TileConfiguration o) {
+        return this.tileType.compareTo(o.tileType());
     }
 }

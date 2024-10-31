@@ -24,13 +24,12 @@ public class Tile {
      *
      * @param position the position (row, column) within the grid
      */
-    public Tile(final Position position, final int tileSize, final int totalTiles) {
+    public Tile(final Position position, final int tileSize) {
         super();
         this.tileLabel = new TileLabel(tileSize);
         this.collapsed = false;
         this.position = position;
         this.tileConfiguration = Optional.empty();
-        this.entropy = totalTiles;
     }
 
     public final TileLabel getTileLabel() {

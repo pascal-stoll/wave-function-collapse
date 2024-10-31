@@ -31,7 +31,7 @@ public abstract class TileSet {
                 for (int rotation : tileType.rotations()) {
                     Image finalImage = rotateImage(image, rotation);
                     List<EdgeType> rotatedEdges = rotateEdges(tileType.edges(), rotation);
-                    this.allTileConfigurations.add(new TileConfiguration(finalImage, rotation, rotatedEdges));
+                    this.allTileConfigurations.add(new TileConfiguration(tileType, finalImage, rotation, rotatedEdges));
                 }
             }
             catch (IOException e) {
@@ -50,12 +50,27 @@ public abstract class TileSet {
     }
 
     /**
+     * Returns the default distribution how often different tiles occur
+     * @return a Map mapping each Tile to 1, that is equal weight of all Tiles
+     */
+    public Map<TileType, Float> defaultProbabilityDistribution() {
+        Map<TileType, Float> distribution = new HashMap<>();
+        for (TileType tileType : defineTiles()) {
+            distribution.put(tileType, 1f);
+        }
+        return distribution;
+    }
+
+    /**
      * defines the Tiles of the TileSet by returning a List of Tiles.
      * Method is overwritten in child classes to define the respective TileSet
      *
      * @return a List of all Tiles in this TileSet
      */
     protected abstract List<TileType> defineTiles();
+
+    public abstract Map<TileType, Float> testProbDistribution();
+
 
     /**
      * creates a BufferedImage from the given file path

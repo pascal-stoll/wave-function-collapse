@@ -41,4 +41,9 @@ public class CarcassoneTileSet extends TileSet {
                 new TileType("tube.jpg",                new Integer[]{0},           new EdgeType[]{green, city, green, city})
         );
     }
+
+    @Override
+    public Map<TileType, Float> testProbDistribution() {
+        return null;
+    }
 }

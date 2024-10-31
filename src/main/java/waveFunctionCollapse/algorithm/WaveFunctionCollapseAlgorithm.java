@@ -5,8 +5,10 @@ import waveFunctionCollapse.parameters.AlgorithmParameters;
 import waveFunctionCollapse.tilesetdefinition.EdgeType;
 import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 import waveFunctionCollapse.tilesetdefinition.TileSet;
+import waveFunctionCollapse.tilesetdefinition.TileType;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ public class WaveFunctionCollapseAlgorithm {
      * dependent on the given algorithmSpeed parameter, can reach from 0ms to 1000ms
      */
     private final int delayInMs;
+    private final Map<TileType, Float> probabilityDistribution;
     private int tilesCollapsed = 0;
 
     /**
@@ -32,9 +35,15 @@ public class WaveFunctionCollapseAlgorithm {
      * @param parameters all parameters relevant to the algorithm
      */
     public WaveFunctionCollapseAlgorithm(final TileSet tileSet, final AlgorithmParameters parameters) {
-        this.tileConfigurations = tileSet.getAllTileConfigurations();
-        this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileConfigurations.size());
         this.delayInMs = parameters.algorithmSpeed();
+        this.probabilityDistribution = parameters.probabilityDistribution();
+
+        // immediately filters out TileTypes with a probability value of 0
+        this.tileConfigurations = tileSet.getAllTileConfigurations()
+                .stream()
+                .filter(config -> this.probabilityDistribution.get(config.tileType()) != 0)
+                .collect(Collectors.toSet());
+        this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileConfigurations.size());
 
         // Sets up Grid, GridFrame and Tiles
         this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical(), parameters.borderEdge());
@@ -48,7 +57,8 @@ public class WaveFunctionCollapseAlgorithm {
             int col = i % tilesHorizontal;
             Position tilePosition = new Position(row, col);
 
-            Tile tile = new Tile(tilePosition, parameters.tileSize(), this.grid.totalTiles());
+            Tile tile = new Tile(tilePosition, parameters.tileSize());
+            tile.setEntropy(this.grid.totalTiles());
             frame.add(tile.getTileLabel());
             this.grid.getTiles().put(tilePosition, tile);
         }
@@ -164,6 +174,7 @@ public class WaveFunctionCollapseAlgorithm {
 
     /**
      * picks one TileConfiguration of the given Tile to collapse it
+     * picks Tile according the the given probabilityDistribution, choice is random if not specified
      *
      * @param nextCollapsed the Tile to be collapsed next
      * @return one randomly picked configuration
@@ -175,7 +186,33 @@ public class WaveFunctionCollapseAlgorithm {
         // TODO Handle error case better
         if (configurations.isEmpty()) throw new RuntimeException("Error. No valid collapse was found.");
 
-        return WaveFunctionCollapseAlgorithm.getRandomFromList(configurations);
+        List<TileType> types = configurations.stream()
+                .map(TileConfiguration::tileType)
+                .toList();
+
+        List<Float> typeProbs = types.stream().map(this.probabilityDistribution::get).toList();
+
+        float sum = typeProbs.stream().reduce(0f, Float::sum);
+
+        Random random = new Random();
+        float value = random.nextFloat() * sum;
+
+        int i = 0;
+        float currentSum = 0;
+
+        do {
+            currentSum += typeProbs.get(i);
+            i++;
+        }
+        while(currentSum < value);
+
+        TileType chosenType = types.get(i-1);
+
+        List<TileConfiguration> configs = configurations.stream().filter(config -> chosenType.equals(config.tileType())).toList();
+
+
+
+        return WaveFunctionCollapseAlgorithm.getRandomFromList(configs);
     }
 
     /**
@@ -186,7 +223,7 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private List<TileConfiguration> getValidTileConfigurations(final Tile tile) {
         // returns true if a configuration matches all four adjacent edges
-        Predicate<TileConfiguration> cond = config -> {
+        Predicate<TileConfiguration> matchingEdgesCondition = config -> {
             for (int i=0; i<4; i++) {
                 Optional<EdgeType> adjacent = this.grid.getAdjacentEdge(tile, Direction.ALL_DIRECTIONS.get(i));
                 if (adjacent.isEmpty()) continue;
@@ -197,7 +234,7 @@ public class WaveFunctionCollapseAlgorithm {
 
         return this.tileConfigurations
                 .stream()
-                .filter(cond)
+                .filter(matchingEdgesCondition)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

@@ -31,4 +31,9 @@ public class WavyTiles extends TileSet {
               new TileType("tile2.11.png",  new Integer[]{0},           new EdgeType[]{edge101, edge101, edge101, edge101})
         );
     }
+
+    @Override
+    public Map<TileType, Float> testProbDistribution() {
+        return null;
+    }
 }
