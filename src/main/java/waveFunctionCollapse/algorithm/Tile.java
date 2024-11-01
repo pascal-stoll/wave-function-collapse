@@ -10,8 +10,7 @@ import java.util.*;
  *
  * is displayed in a TileLabel object in the GUI.
  */
-public class Tile {
-
+public class Tile implements Comparable<Tile> {
 
     private final TileLabel tileLabel;
     private boolean collapsed;
@@ -19,6 +18,7 @@ public class Tile {
     private final Position position;
     private int entropy;
     private Optional<TileConfiguration> tileConfiguration;
+    private int previousUncollapses;
 
     /**
      * Creates a Tile object
@@ -56,6 +56,9 @@ public class Tile {
     public final void setEntropy(final int value) {
         this.entropy = value;
     }
+    public final int getPreviousUncollapses() {
+        return this.previousUncollapses;
+    }
 
     public final Optional<TileConfiguration> getTileConfiguration() {
         return this.tileConfiguration;
@@ -83,6 +86,14 @@ public class Tile {
         this.collapsed = false;
         this.collapseTime = 0;
         this.tileConfiguration = Optional.empty();
+        this.previousUncollapses++;
+    }
+
+    @Override
+    public int compareTo(Tile other) {
+        int prevCollapses = this.previousUncollapses - other.previousUncollapses;
+        if (prevCollapses != 0) return prevCollapses;
+        return this.collapseTime - other.collapseTime;
     }
 
     @Override

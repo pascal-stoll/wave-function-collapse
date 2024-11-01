@@ -4,8 +4,7 @@ import waveFunctionCollapse.algorithm.WaveFunctionCollapseAlgorithm;
 import waveFunctionCollapse.parameters.AlgorithmParameters;
 import waveFunctionCollapse.parameters.StartConfiguration;
 import waveFunctionCollapse.tilesetdefinition.EdgeType;
-import waveFunctionCollapse.tilesets.CarcassoneTileSet;
-import waveFunctionCollapse.tilesets.LabyrinthTileSet;
+import waveFunctionCollapse.tilesets.*;
 
 import java.awt.*;
 
@@ -14,14 +13,11 @@ import java.awt.*;
  */
 public class WaveFunctionCollapseApp {
 
-    // TODO:
-    // - probabilities of tiles
-    // - backtrack & error recovering
     public static void main(String[] args) {
         // Parameters for the algorithm
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int tileSize = 80;          // in pixels
-        short algorithmSpeed = 50;   // delay in ms between two collapses
+        short algorithmSpeed = 15;   // delay in ms between two collapses
         float nonRandomFactor = 0.2f;   // as percentage
 
         var tileSet = new CarcassoneTileSet();

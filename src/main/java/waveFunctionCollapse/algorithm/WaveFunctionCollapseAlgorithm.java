@@ -7,6 +7,7 @@ import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 import waveFunctionCollapse.tilesetdefinition.TileSet;
 import waveFunctionCollapse.tilesetdefinition.TileType;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -200,22 +201,18 @@ public class WaveFunctionCollapseAlgorithm {
             System.out.println("No valid collapse found. Starting to un-Collapse a Tile.");
 
             int maxTime = 0;
-            Tile target = null;
+            List<Tile> uncollapseOptions = new ArrayList<>(4);
             for (Direction dir : Direction.ALL_DIRECTIONS) {
                 Optional<Tile> adjacent = this.grid.getAdjacentTile(nextCollapsed, dir);
                 if (adjacent.isEmpty()) continue;
 
-                int collapseTime = adjacent.get().getCollapseTime();
-                if (collapseTime < maxTime) continue;
-
-                target = adjacent.get();
-                maxTime = collapseTime;
+                uncollapseOptions.add(adjacent.get());
             }
 
-            if (target == null) {
-                throw new RuntimeException("This should never occur. (Only possible if there are no TileConfigurations possible at all.)");
-            }
+            Optional<Tile> minOption = uncollapseOptions.stream().min(Tile::compareTo);
+            if (minOption.isEmpty()) throw new RuntimeException("This can never occur. (Only if there are no possible Configurations");
 
+            Tile target = minOption.get();
             target.hide();
             target.setEntropy(getValidTileConfigurations(target).size());
             updateEntropiesOfAdjacent(target);
