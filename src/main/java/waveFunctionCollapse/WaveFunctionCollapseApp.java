@@ -28,8 +28,8 @@ public class WaveFunctionCollapseApp {
                 .algorithmSpeed(algorithmSpeed)
                 .startConfiguration(StartConfiguration.MIDDLE)
                 .nonRandomFactor(nonRandomFactor)
-                //.borderEdge(new EdgeType("000"))
-                .probabilityDistribution(tileSet.defaultProbabilityDistribution())
+                .borderEdge(new EdgeType("000"))
+                .probabilityDistribution(tileSet.probabilityDistribution1())
                 .build();
 
         WaveFunctionCollapseAlgorithm algorithm = new WaveFunctionCollapseAlgorithm(tileSet, params);

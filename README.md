@@ -68,3 +68,12 @@ New tile sets can be easily added by with the following steps.
 6. Instantiate an object of your tile set class in the ```WaveFunctionColapseApp``` and pass it into the constructor for ```WaveFunctionCollapseAlgorithm```. Specify the parameters objects to your needs and you're good to go.
 
 To check for any errors with the created tile set, activate ```asserts``` as a VM argument.
+
+
+# More images
+
+The ```WavyTiles``` tile set.
+![image](src/main/resources/image2.png)
+
+The ```LabyrinthTileSet``` tile set with adjusted probability distribution to include more white space.
+![image](src/main/resources/image3.png)
