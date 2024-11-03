@@ -72,7 +72,7 @@ public record AlgorithmParameters(Dimension dimension, int tileSize, short algor
         }
 
         public AlgorithmParameters build() {
-            if (dimension == null || tileSize == 0) {
+            if (dimension == null || tileSize == 0 || probabilityDistribution == null) {
                 throw new RuntimeException("Not all necessary parameters were specified in the builder.");
             }
             return new AlgorithmParameters(dimension, tileSize, algorithmSpeed, startConfiguration, nonRandomFactor, borderEdge, probabilityDistribution);

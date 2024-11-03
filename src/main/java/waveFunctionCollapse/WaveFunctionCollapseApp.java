@@ -16,7 +16,7 @@ public class WaveFunctionCollapseApp {
     public static void main(String[] args) {
         // Parameters for the algorithm
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int tileSize = 80;          // in pixels
+        int tileSize = 100;          // in pixels
         short algorithmSpeed = 15;   // delay in ms between two collapses
         float nonRandomFactor = 0.2f;   // as percentage
 
@@ -28,7 +28,7 @@ public class WaveFunctionCollapseApp {
                 .algorithmSpeed(algorithmSpeed)
                 .startConfiguration(StartConfiguration.MIDDLE)
                 .nonRandomFactor(nonRandomFactor)
-                .borderEdge(new EdgeType("green"))
+                //.borderEdge(new EdgeType("000"))
                 .probabilityDistribution(tileSet.defaultProbabilityDistribution())
                 .build();
 

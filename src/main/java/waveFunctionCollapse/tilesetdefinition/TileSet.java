@@ -20,12 +20,15 @@ public abstract class TileSet {
 
     public TileSet(final String directoryPath) {
         final String projectPath = "src/main/resources/";
+        assert (new File(projectPath).isDirectory()) : "Given project path directory '" + directoryPath + "' does not exist.";
+
         final List<TileType> tileTypes = defineTiles();
 
         this.allTileConfigurations = new HashSet<>();
         for (TileType tileType : tileTypes) {
             try {
                 final String fullImagePath = projectPath + directoryPath + "/" + tileType.fileName();
+                assert (new File(fullImagePath).isFile()) : "File for given file name '\" + tileType.fileName() + \"' does not exist.";
                 final BufferedImage image = initializeImage(fullImagePath);
 
                 for (int rotation : tileType.rotations()) {
@@ -35,7 +38,7 @@ public abstract class TileSet {
                 }
             }
             catch (IOException e) {
-                throw new RuntimeException("No tileType found under the given fileName " + tileType.fileName());
+                throw new RuntimeException("File for given file name '" + tileType.fileName() + "' does not exist.");
             }
         }
     }
@@ -112,8 +115,8 @@ public abstract class TileSet {
      * @param rotation the rotation
      * @return the new List of EdgeType
      */
-    private List<EdgeType> rotateEdges(final ArrayList<EdgeType> edges, final int rotation) {
-        ArrayList<EdgeType> edgesCopy = new ArrayList<>(edges);
+    private List<EdgeType> rotateEdges(final EdgeType[] edges, final int rotation) {
+        List<EdgeType> edgesCopy = new ArrayList<>(Arrays.asList(edges));
         Collections.rotate(edgesCopy, rotation);
 
         return edgesCopy;

@@ -1,14 +1,44 @@
 package waveFunctionCollapse.tilesetdefinition;
 
-import waveFunctionCollapse.algorithm.Tile;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import java.util.*;
 
-public record TileType (String fileName, Set<Integer> rotations, ArrayList<EdgeType> edges) implements Comparable<TileType> {
+public record TileType(String fileName, int[] rotations, EdgeType[] edges) implements Comparable<TileType> {
 
-    public TileType(final String fileName, final Integer[] rotations, final EdgeType[] edges) {
-        this(fileName, Set.of(rotations), new ArrayList<>(List.of(edges)));
+    public TileType {
+        assert (edges.length == 4) : "Not exactly 4 edges provided for tile type of file '" + fileName + "'.";
+        assert (rotations.length <= 4) : "Too many rotations provided for tile type of file '" + fileName + "'.";
     }
+
+    /*
+    public TileType(final String fileName, final EdgeType[] edges) {
+        this(fileName, TileType.getRotations(edges), edges);
+    }
+
+    private static int[] getRotations(final EdgeType[] edges) {
+        List<Integer> rotations = new ArrayList<>(4);
+        rotations.add(0);
+
+        for (int i=1; i<4; i++) {
+            List<EdgeType> edgesListCopy = new ArrayList<>(Arrays.asList(edges));
+            Collections.rotate(edgesListCopy, i);
+
+            for (int j=0; j<4; j++) {
+                if (!edges[j].equals(edgesListCopy.get(j))) {
+                    rotations.add(i);
+                    break;
+                }
+            }
+        }
+
+        return rotations.stream()
+                .mapToInt(Integer::valueOf)
+                .toArray();
+    }
+    */
 
     /**
      * Compares this object with the specified object for order.  Returns a
@@ -44,6 +74,22 @@ public record TileType (String fileName, Set<Integer> rotations, ArrayList<EdgeT
      */
     @Override
     public int compareTo(TileType o) {
-        return this.fileName.compareTo(o.fileName());
+        return this.fileName.compareTo(o.fileName);
+    }
+
+    @Override
+    public int hashCode() {
+        return fileName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (! (other instanceof TileType)) {
+            return false;
+        }
+        return fileName.equals(((TileType) other).fileName);
     }
 }

@@ -7,7 +7,6 @@ import waveFunctionCollapse.tilesetdefinition.TileConfiguration;
 import waveFunctionCollapse.tilesetdefinition.TileSet;
 import waveFunctionCollapse.tilesetdefinition.TileType;
 
-import java.sql.Array;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ public class WaveFunctionCollapseAlgorithm {
      */
     private final int delayInMs;
     private final Map<TileType, Float> probabilityDistribution;
-    private int tilesCollapsed;
+    private int tilesCollapsed = 0;
     private static final Random random =  new Random();
 
     /**
@@ -37,19 +36,25 @@ public class WaveFunctionCollapseAlgorithm {
      */
     public WaveFunctionCollapseAlgorithm(final TileSet tileSet, final AlgorithmParameters parameters) {
         this.delayInMs = parameters.algorithmSpeed();
+
+        assert (parameters.probabilityDistribution().size() ==
+                tileSet.getAllTileConfigurations().stream()
+                        .map(TileConfiguration::tileType)
+                        .distinct()
+                        .count()) : "Number of entries of the provided probability distribution and tile types in the tile set do not match.";
         this.probabilityDistribution = parameters.probabilityDistribution();
 
         // immediately filters out TileTypes with a probability value of 0
         this.tileConfigurations = tileSet.getAllTileConfigurations()
                 .stream()
-                .filter(config -> this.probabilityDistribution.get(config.tileType()) != 0)
+                .filter(config -> this.probabilityDistribution.get(config.tileType()) != 0f)
                 .collect(Collectors.toSet());
+
         this.entropyRandomScore = (int) Math.ceil(parameters.nonRandomFactor() * this.tileConfigurations.size());
 
         // Sets up Grid, GridFrame and Tiles
         this.grid = new Grid(parameters.tilesHorizontal(), parameters.tilesVertical(), parameters.borderEdge());
         GridFrame frame = new GridFrame(parameters.tilesHorizontal(), parameters.tilesVertical());
-
 
         // Initialize Tiles: Creates and initializes tiles for every spot
         int tilesHorizontal = parameters.tilesHorizontal();
@@ -163,11 +168,15 @@ public class WaveFunctionCollapseAlgorithm {
      * @return the Tile to be collapsed next
      */
     private Collapse pickNextCollapse() throws NoValidCollapseException {
-        int minimalEntropy = this.grid.getTiles().values().stream()
+        Optional<Integer> x = this.grid.getTiles().values().stream()
                 .filter(Predicate.not(Tile::isCollapsed))
                 .map(Tile::getEntropy)
-                .min(Integer::compareTo).get()
-                + this.entropyRandomScore;
+                .min(Integer::compareTo);
+                //+ this.entropyRandomScore;
+        if (x.isEmpty()) {
+            x = Optional.of(0);
+        }
+        int minimalEntropy = x.get() + this.entropyRandomScore;
 
         List<Tile> collapseCandidates = this.grid.getTiles().values()
                 .stream()
@@ -184,7 +193,7 @@ public class WaveFunctionCollapseAlgorithm {
 
     /**
      * picks one TileConfiguration of the given Tile to collapse it
-     * picks Tile according the the given probabilityDistribution, choice is random if not specified
+     * picks Tile according the given probabilityDistribution, choice is random if not specified
      *
      * @param nextCollapsed the Tile to be collapsed next
      * @return one randomly picked configuration
@@ -200,7 +209,6 @@ public class WaveFunctionCollapseAlgorithm {
         if (configurations.isEmpty()) {
             System.out.println("No valid collapse found. Starting to un-Collapse a Tile.");
 
-            int maxTime = 0;
             List<Tile> uncollapseOptions = new ArrayList<>(4);
             for (Direction dir : Direction.ALL_DIRECTIONS) {
                 Optional<Tile> adjacent = this.grid.getAdjacentTile(nextCollapsed, dir);
