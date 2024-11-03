@@ -18,12 +18,12 @@ public class LabyrinthTileSet extends TileSet {
         EdgeType edge000 = new EdgeType("000");
 
         return List.of(
-                new TileType("tile1.png",   new int[]{0, 1, 2, 3},    new EdgeType[]{edge010, edge010, edge000, edge000}),
-                new TileType("tile2.png",   new int[]{0},             new EdgeType[]{edge010, edge010, edge010, edge010}),
-                new TileType("tile3.png",   new int[]{0, 1, 2, 3},    new EdgeType[]{edge010, edge000, edge010, edge010}),
-                new TileType("tile4.png",   new int[]{0, 1},          new EdgeType[]{edge010, edge000, edge010, edge000}),
-                new TileType("tile5.png",   new int[]{0},             new EdgeType[]{edge000, edge000, edge000, edge000}),
-                new TileType("tile6.png",   new int[]{0, 1, 2, 3},    new EdgeType[]{edge010, edge000, edge000, edge000})
+                new TileType("tile1.png",  new EdgeType[]{edge010, edge010, edge000, edge000}),
+                new TileType("tile2.png",  new EdgeType[]{edge010, edge010, edge010, edge010}),
+                new TileType("tile3.png",  new EdgeType[]{edge010, edge000, edge010, edge010}),
+                new TileType("tile4.png",  new EdgeType[]{edge010, edge000, edge010, edge000}),
+                new TileType("tile5.png",  new EdgeType[]{edge000, edge000, edge000, edge000}),
+                new TileType("tile6.png",  new EdgeType[]{edge010, edge000, edge000, edge000})
         );
     }
 

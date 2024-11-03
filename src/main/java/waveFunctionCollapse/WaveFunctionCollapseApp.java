@@ -16,11 +16,11 @@ public class WaveFunctionCollapseApp {
     public static void main(String[] args) {
         // Parameters for the algorithm
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int tileSize = 100;          // in pixels
+        int tileSize = 50;          // in pixels
         short algorithmSpeed = 15;   // delay in ms between two collapses
         float nonRandomFactor = 0.2f;   // as percentage
 
-        var tileSet = new CarcassoneTileSet();
+        var tileSet = new LabyrinthTileSet();
 
         AlgorithmParameters params = new AlgorithmParameters.Builder()
                 .dimension(dimension)

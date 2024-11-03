@@ -115,10 +115,9 @@ public abstract class TileSet {
      * @param rotation the rotation
      * @return the new List of EdgeType
      */
-    private List<EdgeType> rotateEdges(final EdgeType[] edges, final int rotation) {
-        List<EdgeType> edgesCopy = new ArrayList<>(Arrays.asList(edges));
+    private List<EdgeType> rotateEdges(final List<EdgeType> edges, final int rotation) {
+        List<EdgeType> edgesCopy = new ArrayList<>(edges);
         Collections.rotate(edgesCopy, rotation);
-
         return edgesCopy;
     }
 }
